@@ -1,0 +1,9 @@
+---
+# vars file for provisioningInstances
+instance_type: t2.micro
+sec_group: 
+image: ami-09cd747c78a9add63
+keypair: ansible-key
+region: us-east-1
+count: 3
+aws_profile: lab-ansible

@@ -1,0 +1,55 @@
+---
+- name: Create security group and launch EC2 instances
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    tag_prefix: ansible-
+    num_instances: 3
+    instance_type: t2.micro
+    region: us-east-1
+    group_name: lab-k8s
+    ssh_port: 22
+
+  tasks:
+    - name: Create security group
+      ec2_group:
+        name: "{{ group_name }}"
+        description: "Lab security group for Kubernetes cluster"
+        region: "{{ region }}"
+        rules:
+          - proto: tcp
+            from_port: "{{ ssh_port }}"
+            to_port: "{{ ssh_port }}"
+            cidr_ip: 0.0.0.0/0
+      register: sg
+
+    - name: Launch EC2 instances
+      ec2:
+        group: "{{ sg.group_id }}"
+        instance_type: "{{ instance_type }}"
+        image: ami-0c94855ba95c71c99
+        key_name: your_key_name
+        count: "{{ num_instances }}"
+        wait: true
+        instance_tags:
+          Name: "{{ tag_prefix }}{{ '%02d'|format(item+1) }}"
+      loop: "{{ range(0, num_instances)|list }}"
+      register: ec2
+
+    - name: Add public IP addresses to inventory file
+      lineinfile:
+        path: /etc/ansible/hosts
+        line: "{{ item.public_ip_address }}"
+        insertafter: "[k8sPublic]"
+      loop: "{{ ec2.instances }}"
+
+    - name: Add private IP addresses to inventory file
+      lineinfile:
+        path: /etc/ansible/hosts
+        line: "{{ item.private_ip_address }}"
+        insertafter: "[k8sPrivate]"
+      loop: "{{ ec2.instances }}"
+
+
+ansible-playbook create-k8s-cluster.yml

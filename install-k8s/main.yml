@@ -1,0 +1,37 @@
+- hosts: all
+  become: yes
+  user: isnowheart
+  gather_facts: no
+  pre_tasks:
+  - name: 'REPO Updating'
+    raw: 'apt update'
+  - name: 'Python3 Installation'
+    raw: 'apt-get install -y python3 && apt-get install -y python2.7'
+    register: install_python
+    changed_when: '"Setting up python" in install_python.stdout'
+  roles:
+  - { role: install-k8s, tags: ["install_k8s_role"] }
+
+- hosts: "k8s-master"
+  become: yes
+  user: isnowheart
+  roles:
+  - { role: create-cluster, tags: ["create_cluster_role"] }
+
+- hosts: "k8s-workers"
+  become: yes
+  user: isnowheart
+  roles:
+  - { role: join-workers, tags: ["join_workers_role"] }
+
+- hosts: "k8s-master"
+  become: yes
+  user: isnowheart
+  roles:
+  - { role: install-helm, tags: ["install_helm3_role"] }
+
+- hosts: "k8s-master"
+  become: yes
+  user: isnowheart
+  roles:
+  - { role: install-monit-tools, tags: ["install_monit_tools_role"] }

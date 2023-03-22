@@ -1,0 +1,37 @@
+---
+- name: Creating Application Giropos directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+  loop: 
+    - /opt/giropops
+    - /opt/giropops/logs
+    - /opt/giropops/conf
+  register: crete_directory
+
+- name: Copy App Deployment file to host
+  template: 
+    src: app-v1.yml.j2
+    dest: /opt/giropops/app-v1.yml
+    owner: root
+    group: root
+    mode: 0644
+  register: copy_template
+
+- name: Copy App Service file to host
+  copy: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop: 
+    - { src: 'service-app.yml', dest: '/opt/giropops/services-app.yml' }
+  register: copy_services_file
+
+- name: Running App Deployment Giropos
+  shell: kubectl apply -f /opt/giropops/app-v1.yml
+  register: deploy_app
+  changed_when: '"app-v1 created" in deploy_app.stdout'
+
+- name: Create App Service Giropops
+  shell: kubectl apply -f /opt/giropops/services-app.yml
+  register: deploy_svc_app
+  changed_when: '"service/giropops created" in deploy_svc_app.stdout'

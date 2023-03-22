@@ -1,0 +1,238 @@
+    1  sudo su -
+    2  ll
+    3  mkdir lab-ansible
+    4  nano hosts 
+    5  ansible -i hosts all -m ping 
+    6  ssh node2
+    7  ssh node3
+    8  ansible -i hosts all -m ping 
+    9  ll
+   10  sudo su - 
+   11  ssh-copy-id isnowheart@node2
+   12  cd .ssh
+   13  ssh-copy-id isnowheart@node3
+   14  ansible -i hosts all -m ping 
+   15  ansible -i hosts node2 -m apt -a "name=matrix state=present"
+   16  ansible -i hosts 192.168.1.17 -m apt -a "name=matrix state=present"
+   17  ll
+   18  nano hosts
+   19  ansible -i hosts node2 -m apt -a "name=cmatrix state=present"
+   20  ansible -i hosts node2 -m apt -a "update -y"
+   21  ansible -i hosts node2 -m apt -a "update"
+   22  ansible -i hosts node2 -m apt -help
+   23  clear
+   24  ansible -i hosts node2 -m apt -help
+   25  ansible -i hosts node2 -m apt -a -help
+   26  ansible -i hosts node2 -m apt -a "update_cache=yes" --become
+   27  ansible -i hosts node2 -m apt -a "update_cache=yes" --become-user 
+   28  ansible -i hosts node2 -m apt -a "update_cache=yes" --become
+   29  ansible -i hosts node2 -m apt -a "update_cache=yes" --become =l
+   30  ansible -i hosts node2 -m apt -a "update_cache=yes" --become -l
+   31  ansible -i hosts node2 -m apt -a "name=cmatrix state=present"
+   32  ansible -i hosts node2 -m apt -a "name=cmatrix state=present" -b 
+   33  ansible -i hosts node2 -m apt -a "name=cmatrix state=present" -b -ask-pass
+   34  ansible -i hosts node2 -m apt -a "name=cmatrix state=present" -b -kK
+   35  ansible -i hosts node3 -m apt -a "update_cache=yes name=cmatrix state=present" -b -kK
+   36  ansible -i hosts node3 -m apt -a "update_cache=yes name=cmatrix state=present" -b -K
+   37  ansible -i hosts all -m shell -a "uptime"
+   38  ansible -i hosts all -m shell -a "ifconfig eth0"
+   39  ansible -i hosts all -m shell -a "ifconfig ens0p3"
+   40  ansible -i hosts all -m shell -a "ifconfig enp0s3"
+   41  ansible -i hosts node2 -m git -a "repo=https://github.com/badtuxx/giropops-monitoring.git dest=/home/isnowheart"
+   42  ansible -i hosts node2 -m git -a "repo=https://github.com/badtuxx/giropops-monitoring.git dest=/home/isnowheart version=HEAD"
+   43  ansible -i hosts node2 -m git -a "repo=https://github.com/badtuxx/giropops-monitoring.git dest=/home/isnowheart/ version=HEAD"
+   44  ansible -i hosts node2 -m git -a "repo=https://github.com/badtuxx/giropops-monitoring.git dest=/home/isnowheart/testgit"
+   45  ll
+   46  ansible -i hosts node3 -m setup
+   47  ansible -i hosts all -m setup -a "filter=ansible_distribution"
+   48  ansible -i hosts all -m setup -a "filter=ansible_lbs.description"
+   49  ansible -i hosts all -m setup -a "filter=ansible_lsb.description"
+   50  ansible -i hosts all -m setup -a "filter=ansible_lsb"
+   51  ansible -i hosts all -m setup -a "filter=description"
+   52  ansible -i hosts all -m setup -a "filter=ansible_lsb"
+   53  ansible -i hosts all -m setup -a "filter=ansible_lsb.description"
+   54  ansible -i hosts all -m setup -a "filter=ansible_lsb[]"
+   55  ansible -i hosts all -m setup -a "filter=ansible_lsb.[]"
+   56  ansible -i hosts all -m setup -a "filter=ansible_lsb"
+   57  ansible -i hosts all -m setup -a "filter=ipv4"
+   58  ansible -i hosts all -m setup 
+   59  ansible -i hosts all -m setup -a "filter=ansible_env"
+   60  ansible -i hosts all -m setup -a "filter=ansible_hostname"
+   61  ansible -i hosts all -m setup -a "filter=ansible_ipv4"
+   62  ansible -i hosts all -m setup 
+   63  ansible -i hosts all -m setup -a "filter=ansible_enp0s3.features"
+   64  ansible -i hosts all -m setup -a "filter=ansible_enp0s3"
+   65  ansible -i hosts all -m setup -a "filter=ipv4"
+   66  nano primeiro-playbook.yml
+   67  nano hosts 
+   68  nano primeiro-playbook.yml
+   69  ansible -i hosts web-nodes -m ping
+   70  ansible -i hosts web-nodes -m ping -vvvv
+   71  ansible -i db web-nodes -m ping -vvvv
+   72  ansible -i db web-nodes -m ping
+   73  ansible -i hosts db -m ping
+   74  nano hosts 
+   75  ansible -i hosts db -m ping
+   76  nano primeiro-playbook.yml
+   77  ansible playbook -i hosts primeiro-playbook.yml 
+   78  ansible playbook -i hosts primeiro-playbook.yml -K
+   79  clear
+   80  ansible playbook -i hosts primeiro-playbook.yml -K
+   81  ansible playbook -i hosts primeiro-playbook.yml 
+   82  clear
+   83  ansible playbook -i hosts primeiro-playbook.yml 
+   84  nano primeiro-playbook.yml
+   85  ansible playbook -i hosts primeiro-playbook.yml 
+   86  clear
+   87  ansible playbook -i hosts primeiro-playbook.yml 
+   88  nano primeiro-playbook.yml
+   89  ansible playbook -i hosts primeiro-playbook.yml 
+   90  ansible-playbook -i hosts primeiro-playbook.yml 
+   91  nano primeiro-playbook.yml
+   92  ansible-playbook -i hosts primeiro-playbook.yml 
+   93  ansible-playbook -i hosts primeiro-playbook.yml -K
+   94  nano primeiro-playbook.yml
+   95  ansible-playbook -i hosts primeiro-playbook.yml -K
+   96  nano primeiro-playbook.yml
+   97  ansible -i hosts all -m ping
+   98  shutdown now
+   99  sudo shutdown now
+  100  sudo su - 
+  101  ll
+  102  cd lab-ansible/
+  103  ll
+  104  echo '---
+- hosts: webservers
+  become: yes
+  remote_user: ubuntu
+  tasks:
+  - name: Instalando o nginx
+    apt:
+      name: nginx
+      state: latest
+      update_cache: yes
+  - name: Iniciando o nginx
+    service:
+      name: nginx
+      state: started
+  - name: Copiando index.html personalizado
+    template:
+      src: index.html.j2
+      dest: /var/www/html/index.html
+  - name: Copiando nginx.conf
+    copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+    notify: Restartando o Nginx
+  handlers:
+  - name: Restartando o Nginx
+    service:
+      name: nginx
+      state: restarted' > nginx_playbook.yml
+  105  cat nginx_playbook.yml 
+  106  echo '<html>
+<head>
+  <title>GIROPOPS STRIGUS GIRUS!</title>
+<body>
+  <h1>DESCOMPLICANDO O ANSIBLE!</h1>
+</body>
+</head>
+</html>' > cat index.html
+  107  ll
+  108  echo '<html>
+<head>
+  <title>GIROPOPS STRIGUS GIRUS!</title>
+<body>
+  <h1>DESCOMPLICANDO O ANSIBLE!</h1>
+</body>
+</head>
+</html>' > cat index.html
+  109  echo '<html>
+<head>
+  <title>GIROPOPS STRIGUS GIRUS!</title>
+<body>
+  <h1>DESCOMPLICANDO O ANSIBLE!</h1>
+</body>
+</head>
+</html>' > index.html
+  110  ll
+  111  cat index.html 
+  112  ansible-playbook -i hosts primeiro-playbook.yml -K
+  113  cat index.html 
+  114  nano index.html 
+  115  ansible-playbook -i hosts primeiro-playbook.yml -K
+  116  nano nginx_playbook.yml 
+  117  cp nginx_playbook.yml nginx_playbook.yml.bak
+  118  nano nginx_playbook.yml 
+  119  ansible-playbook -i hosts primeiro-playbook.yml -K
+  120  k get pods
+  121  curl 192.168.1.18
+  122  curl 192.168.1.17
+  123  mv index.html index.html.js
+  124  mv index.html.js index.html.j2
+  125  ll
+  126  ansible-playbook -i hosts primeiro-playbook.yml -K
+  127  curl 192.168.1.17
+  128  ansible-playbook -i hosts nginx_playbook.yml -K
+  129  nano nginx_playbook.yml 
+  130  ansible-playbook -i hosts nginx_playbook.yml -K
+  131  ssh isnowheart@node2
+  132  ssh isnowheart@node3
+  133  ansible-playbook -i hosts nginx_playbook.yml -K
+  134  nano nginx_playbook.yml 
+  135  ansible-playbook -i hosts nginx_playbook.yml -K
+  136  ll
+  137  nano nginx_playbook.yml 
+  138  ansible-playbook -i hosts nginx_playbook.yml -K
+  139  nano nginx_playbook.yml 
+  140  ansible-playbook -i hosts nginx_playbook.yml -K
+  141  curl 192.168.1.17
+  142  curl node3
+  143  mkdir k8s-cluster-project
+  144  cd k8s-cluster-project/
+  145  mkdir provisioning
+  146  mkdir install-k8s
+  147  mkdir deploy-app
+  148  mkdir extra
+  149  ll
+  150  nano READ.me
+  151  apt install tree
+  152  sudo apt install tree
+  153  tree
+  154  touch hosts
+  155  tree
+  156  cd ..
+  157  tree
+  158  cd k8s-cluster-project/
+  159  touch main.yml
+  160  cd provisioning/
+  161  tree
+  162  cd ..
+  163  ll
+  164  mv hosts provisioning/
+  165  mov main.yml provisioning/
+  166  mv main.yml provisioning/
+  167  cd provisioning/
+  168  tree
+  169  cd ..
+  170  tree
+  171  ll
+  172  cat cat 
+  173  rm cat
+  174  cat hosts 
+  175  cd k8s-cluster-project/
+  176  ls
+  177  cd provisioning/
+  178  ansible-galaxy init provisioning
+  179  tre
+  180  tree
+  181  ll
+  182  mkdir roles
+  183  mv provisioning/ roles
+  184  cd roles/
+  185  rm -rf provisioning/
+  186  ansible-galaxy init provisioningInstances
+  187  ansible-galaxy init provisioningSecurityGroups
+  188  rm -rf provisioningSecurityGroups/
+  189  history
+  190  history > history-20230320-1039

@@ -1,0 +1,5 @@
+---
+# vars file for roles/install-monit-tools
+repo_name: prometheus-community
+url_repo_helm: https://prometheus-community.github.io/helm-charts
+deploy_prometheus: "--set prometheusOperator.createCustomResource=false lab-prometheus prometheus-community/kube-prometheus-stack"

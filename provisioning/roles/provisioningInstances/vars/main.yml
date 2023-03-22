@@ -1,0 +1,12 @@
+---
+# vars file for provisioningInstances
+instance_type: t2.medium
+sec_group_name: lab-k8s
+image: ami-09cd747c78a9add63
+keypair: ansible-key
+region: us-east-1
+count: 3
+aws_profile: lab-ansible
+tag_name: ansible
+insert_after_public: k8sPublic
+insert_after_private: k8sPrivate
