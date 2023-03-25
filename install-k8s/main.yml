@@ -5,8 +5,14 @@
   pre_tasks:
   - name: 'REPO Updating'
     raw: 'apt update'
+  - name: 'Install Openshift'
+    raw: 'pip install openshift'
+  - name: Install PyYAML
+    raw: 'pip install pyyaml'
+  - name: Install Kubernetes
+    raw: 'pip install kubernetes'
   - name: 'Python3 Installation'
-    raw: 'apt-get install -y python3 && apt-get install -y python2.7'
+    raw: 'apt-get install -y python3 && apt-get install python3-pip -y && apt-get install -y python2.7'
     register: install_python
     changed_when: '"Setting up python" in install_python.stdout'
   roles:

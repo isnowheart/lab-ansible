@@ -7,6 +7,36 @@
   shell: helm repo update
   register: prometheus_repo_update
 
+- name: Create "monitoring" namespace
+  k8s:
+    state: present
+    api_version: v1
+    kind: Namespace
+    name: "{{ ns_monitoring }}"
+    
 - name: Installling Prometheus Operator
-  shell: helm install {{ deploy_prometheus }}
+  shell: "helm install {{ deploy_prometheus }} -n {{ ns_monitoring }}" 
   register: prometheus_install
+
+- name: Expose Grafana host port and print IP and port to access Grafana
+  k8s_service:
+    type: NodePort
+    namespace: "{{ ns_monitoring }}"
+    name: "{{ release_name }}-grafana"
+    ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+      nodePort: "{{ grafana_node_port }}"
+    state: present
+  register: grafana_service
+
+
+- name: Print IP and port to access Grafana
+  debug:
+    msg: "{{ grafana_service }}"
+
+- name: Print IP and port to access Grafana
+  debug:
+    msg: "Access Grafana at http://{{ ansible_host }}:{{ grafana_node_port }}"
+
