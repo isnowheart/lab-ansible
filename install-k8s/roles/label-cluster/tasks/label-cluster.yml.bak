@@ -1,0 +1,308 @@
+---
+- name: Get worker nodes
+  shell: "kubectl get nodes --no-headers -l '!node-role.kubernetes.io/control-plane' -o custom-columns=:metadata.name"
+  register: worker_nodes
+
+#- name: Get host group name
+#  add_host:
+#    name: "{{ item }}"
+#    groups: "{{ groups.keys() | reject('match', '(all|ungrouped|master)') }}"
+#    hostname_var: group_name
+#  loop: "{{ worker_nodes.stdout_lines }}"
+#  register: groups_filtered
+
+
+#- name: to aqui
+#  debug:
+#    var: groups_filtered
+
+#- name: Parse inventory groups and hosts
+#  inventory_hostnames:
+    # excluding groups all, ungrouped, and k8s-master
+#    groups: "{{ groups.keys() | difference(['all', 'ungrouped', 'k8s-master']) }}"
+#  register: inventory_data
+
+- name: Add label to matching nodes
+  k8s:
+    state: present
+    kind: Node
+    name: "{{ item }}"
+    definition:
+      metadata:
+        labels:
+          node-role.kubernetes.io/worker: ""
+          kubernetes.io/environment: "{{ hostvars[item]['group_names'][0] }}"
+  loop: "{{ groups | dict2items | map(attribute='value') | list  | flatten }}"
+  when: item in worker_nodes.stdout_lines
+
+#- name: Print all groups
+#  debug:
+#    var: groups | reject('match', '(all|ungrouped|k8s-master)') 
+
+#- name: Print all key groups
+#  debug:
+#    var: groups.keys()
+
+#- name: Print all values groups
+#  debug:
+#    var: groups.values()
+
+#- name: sei lá
+#  debug:
+#    msg: "name: {{ item.1 }}"
+#  loop: "{{ groups | dict2items | json_query('[?value.hosts != null].[key, value.hosts]') }}"
+#  when: "{{ item.1 }} | intersect(worker_nodes.stdout_lines) | length > 0"
+
+#- name: Get list of host groups
+#  set_fact:
+#    host_groups: "{{ groups.keys() | reject('match', '(all|ungrouped)') }}"
+#  register: fudeu2
+
+
+
+#- name: Create dictionary of host groups and their hosts
+#  set_fact:
+#    host_group_dict: "{{ groups | dict2items | reject('match', '(all|ungrouped|k8s-master)') | map(attribute='value') | list | flatten | map('extract', hostvars, ['ansible_hostname', 'inventory_hostname']) | select('defined') | groupby('group_names') | map('list') | list | items2dict(keys='key', values='value') }}"
+
+#- name: Label matching nodes with environment label
+#  k8s:
+#    definition:
+#      apiVersion: v1
+#      kind: Node
+#      metadata:
+#        name: "{{ item }}"
+#        labels:
+#          kubernetes.io/environment: "{{ hostvars[item].group_names[0] }}"
+#          node-role.kubernetes.io/worker: ""
+#      update_labels: true
+#  loop:
+#    - "{{ worker_nodes.stdout_lines }}"
+#  when: item in host_group_dict.values() | map('extract', 'inventory_hostname') | list
+#  register: merda
+
+
+
+
+
+
+
+
+#- name: Compare nodes with host groups
+#  debug:
+#    msg: "Node {{ item.0 }} is in group {{ item.1 }}"
+#  loop: "{{ worker_nodes.stdout_lines | product(host_groups) | select('match', '^{{ item.1 }}$') | list }}"
+#  register: fudeu
+
+#- name: troupe
+#  debug:
+#    var: merda
+
+
+
+#- name: troupe
+#  debug:
+#    var: fudeu
+#group_names
+
+#- name: show all the hosts matching the pattern
+#  debug:
+#    msg: "{{ item }}"
+#  with_inventory_hostnames:
+#    - all
+
+#- name: Match node names with hosts
+#  set_fact:
+#    node_host_map: "{{ node_host_map | default({}) | combine({item: group_name}) }}"
+#  loop: "{{ groups | reject('match', 'all') | reject('match', 'ungrouped') | map('extract', hostvars, ['inventory_hostname']) | flatten }}"
+#  vars:
+#    group_name: "{{ item | regex_replace('\\..*', '') }}"
+#  when: item in worker_nodes.stdout_lines
+#  register: primeiro
+
+#- name: Label nodes with respective environment
+#  k8s:
+#    api_version: v1
+#    kind: Node
+#    name: "{{ item }}"
+#    state: present
+#    labels:
+#      kubernetes.io/environment: "{{ node_host_map[item] }}"
+#      node-role.kubernetes.io/worker: ""
+#      # add other labels as needed
+#  loop: "{{ worker_nodes.stdout_lines }}"
+#  when: item in node_host_map
+#  register: segundo
+
+
+#- name: segundo
+#  debug:
+#    var: segundo
+
+
+
+
+
+- name: Match nodes with hosts file
+  set_fact:
+    node_group: "{{ groups[item] | reject('match', '(all|ungrouped|master)') }}""
+  loop: "{{ worker_nodes.stdout_lines | list  | map(item) | list }}"
+
+- name: Add kubernetes.io/environment label to nodes
+  k8s:
+    api_version: v1
+    kind: Node
+    name: "{{ item.1 }}"
+    definition:
+      metadata:
+        labels:
+          node-role.kubernetes.io/worker: ""
+          kubernetes.io/environment: "{{ item.0 }}"
+    state: present
+  loop:
+    - "{{ node_group }}"
+    - "{{ worker_nodes.stdout_lines | map(attribute='metadata.name') | list }}"
+
+
+
+- name: Get node names and their groups from inventory
+  add_host:
+    name: "{{ item }}"
+    groups: "{{ groups[item] }}"
+  loop: "{{ groups['all'] }}"
+  when: "'kube-node' in hostvars[item]['group_names']"
+  register: host_groups
+
+- name: Label nodes with environment tag
+  k8s:
+    state: present
+    kind: Node
+    api_version: v1
+    name: "{{ item }}"
+    namespace: default
+    labels:
+#      "{{ label_key }}" :
+      kubernetes.io/environment: "{{ host_groups[item]['group_names'][0] }}"
+  when: item != 'master' and host_groups[item]['group_names']
+  loop: "{{ worker_nodes.stdout_lines }}"
+
+
+
+
+
+- name: Add label to nodes
+  k8s:
+    state: label
+    kind: Node
+    name: "{{ item }}"
+    definition:
+      metadata:
+        name: "{{ inventory_hostname }}"
+        labels:
+          node-role.kubernetes.io/worker: ""
+          kubernetes.io/environment: "{{ group_names | intersect( item ) | first }}"
+        overwrite: true
+  when: item | intersect(group_names) | length > 0
+  loop: "{{ worker_nodes.stdout_lines }}"
+  register: ler_esse 
+
+- name: ler_esse
+  debug:
+    var: ler_esse
+
+
+
+
+
+
+
+#  debug: 
+#    var: worker_nodes
+
+
+#- name: List host groups
+#  add_host:
+#    name: "{{ item }}"
+#    groups: all_host_groups
+#  loop: "{{ groups.key }}"
+#  when: "'all' not in groups[item]"
+#  register: ler3
+
+#- name: ler3
+#  debug:
+#    var: ler3
+
+#- name: ler
+#  debug:
+#    var: lertbm
+
+#- name: Label worker nodes
+#  k8s:
+#    api_version: v1
+#    kind: Node
+#    name: "{{ item }}"
+#    definition:
+#      metadata:
+#        name: "{{ inventory_hostname }}"
+#        labels:
+#          node-role.kubernetes.io/worker: ""
+#          kubernetes.io/environment: "{{ group_names | difference(['all', 'all-masters']) | intersect(inventory_hostname_groups) | join(',') }}"
+#"{{ group_names }}"
+#      overwrite: true
+#    state: present
+#  loop: "{{ worker_nodes.stdout_lines }}"  
+
+
+
+
+#- name: Add environment label to nodes
+#  command: kubectl label node "{{ item }}" "kubernetes.io/environment={{ group_names[0] }}"
+#  loop: "{{ worker_nodes.stdout.split(' ') }}"
+#  when: group_names[0] != "all"
+
+
+
+
+#- name: Add labels to worker nodes
+#  k8s:
+#    api_version: v1
+#    kind: Node
+#    name: "{{ inventory_hostname }}"
+#    definition:
+#      metadata:
+#        labels:
+#          node-role.kubernetes.io/worker: worker
+#          kubernetes.io/environment: "{{ group_names }}"
+#      overwrite: true
+#  loop: "{{ worker_nodes.stdout_lines }}"
+#  loop: "{{ worker_nodes.resources }}"
+#  when: "'control-plane' not in hostvars[item.metadata.name]['group_names']"  
+#        kubernetes.io/environment: "{{ db_group }}"
+#"{{ db_group }}"
+#      overwrite: true
+#    state: present
+#  when: item in db_group
+#  loop: "{{ worker_nodes.stdout_lines }}"
+
+#- name: Add labels to worker nodes for DBs
+#  k8s:
+#    api_version: v1
+#    kind: Node
+#    name: "{{ item }}"
+#    definition:
+#      metadata:
+#        labels:
+#          node-role.kubernetes.io/worker: worker
+#          kubernetes.io/environment: teste
+#      overwrite: false
+#  loop: "{{ worker_nodes.resources }}"
+#  when: "'control-plane' not in hostvars[item.metadata.name]['group_names']"
+#          kubernetes.io/environment: "{{ hostvars[item.metadata.name]['group_names'] | regex_replace('-.*', '') }}"
+#"{{ hostvars[item.metadata.name]['group_names'] | difference(['control-plane']) | first }}"
+#    state: present
+#  when: item not in group_names[0]
+#  loop: "{{ worker_nodes.stdout_lines }}"
+
+
+#      overwrite: true
+#    loop: "{{ nodes.resources }}"
+#    when: "'control-plane' not in hostvars[item.metadata.name]['group_names']"

@@ -1,0 +1,15 @@
+---
+- name: Get worker nodes
+  shell: "kubectl get nodes --no-headers -l '!node-role.kubernetes.io/control-plane' -o custom-columns=:metadata.name"
+  register: worker_nodes
+
+- name: Add label to matching nodes
+  k8s:
+    kind: Node
+    name: "{{ item }}"
+    definition:
+      metadata:
+        labels:
+          node-role.kubernetes.io/worker: ""
+    state: present
+  loop: "{{ worker_nodes.stdout_lines }}"

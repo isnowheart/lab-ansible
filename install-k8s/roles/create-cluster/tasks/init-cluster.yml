@@ -27,14 +27,14 @@
     remote_src: yes
     owner: root
     group: root
-    mode: '0750'
+    mode: '0700'
   changed_when: True
 
 - name: Download Weavenet file
   get_url:
     url: "{{ default_url_weavenet }}"
     dest: /tmp/weavenet.yaml
-    mode: '0664'
+    mode: '0755'
 
 - name: Setting pod network Weavenet
   shell: kubectl apply -f /tmp/weavenet.yaml

@@ -1,42 +1,46 @@
 ---
-- name: Add Helm REPO
-  shell: helm repo add {{ repo_name }} {{ url_repo_helm }}
-  register: prometheus_add_repo
+- name: Add stable chart REPO for Prometheus-Operator 
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: "https://prometheus-community.github.io/helm-charts"
 
-- name: Helm update
-  shell: helm repo update
-  register: prometheus_repo_update
-
-- name: Create "monitoring" namespace
-  k8s:
-    state: present
-    api_version: v1
-    kind: Namespace
-    name: "{{ ns_monitoring }}"
-    
-- name: Installling Prometheus Operator
-  shell: "helm install {{ deploy_prometheus }} -n {{ ns_monitoring }}" 
-  register: prometheus_install
+- name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: prometheus-community/kube-prometheus-stack
+    release_name: "{{ release_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+    create_namespace: true
+    update_repo_cache: true
 
 - name: Expose Grafana host port and print IP and port to access Grafana
   k8s_service:
-    type: NodePort
-    namespace: "{{ ns_monitoring }}"
+    namespace: "{{ deploy_namespace }}"
     name: "{{ release_name }}-grafana"
     ports:
-    - port: 80
-      protocol: TCP
-      targetPort: 80
+    - name: http-web
       nodePort: "{{ grafana_node_port }}"
+      port: 80
+      protocol: TCP
+      targetPort: 3000
+    definition:
+      metadata:
+        name: "{{ release_name }}-grafana"
+        namespace: "{{ deploy_namespace }}"
+        labels:
+          app: galaxy
+          service: web
+          app.kubernetes.io/instance: lab-prometheus
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: grafana
+    selector:
+      app.kubernetes.io/instance: "{{ release_name }}"
+      app.kubernetes.io/name: grafana
+    type: NodePort
     state: present
   register: grafana_service
 
-
 - name: Print IP and port to access Grafana
   debug:
-    msg: "{{ grafana_service }}"
-
-- name: Print IP and port to access Grafana
-  debug:
-    msg: "Access Grafana at http://{{ ansible_host }}:{{ grafana_node_port }}"
-
+    msg: 
+      - "Access Grafana at:"
+      - "http://{{ ansible_host }}:{{ grafana_node_port }}"

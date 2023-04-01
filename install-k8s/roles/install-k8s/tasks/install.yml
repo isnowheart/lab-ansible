@@ -12,14 +12,17 @@
     repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
     state: present
 
+- name: Turn off SWAP
+  shell: swapoff -a
+
 - name: kubelet, kubeadm and kubectl installation packages
   apt:
     name: "{{ packages }}"
   vars:
     packages:
-    - kubelet
-    - kubeadm
-    - kubectl
+    - kubelet=1.24.12-00
+    - kubeadm=1.24.12-00
+    - kubectl=1.24.12-00
   notify: Restart Kubelet
 
 - name: Remove containerd config file

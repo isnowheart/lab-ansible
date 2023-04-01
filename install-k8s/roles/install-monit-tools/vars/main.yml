@@ -3,6 +3,6 @@
 repo_name: prometheus-community
 url_repo_helm: https://prometheus-community.github.io/helm-charts
 deploy_prometheus: "--set prometheusOperator.createCustomResource=false {{ release_name }} prometheus-community/kube-prometheus-stack"
-ns_monitoring: monitoring
+deploy_namespace: monitoring
 grafana_node_port: 30000
 release_name: lab-prometheus

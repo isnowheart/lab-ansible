@@ -1,0 +1,3 @@
+---
+# vars file for roles/label-cluster
+db_group: db

@@ -1,0 +1,3 @@
+---
+# tasks file for argocd
+- include_tasks: deploy-argocd.yml
