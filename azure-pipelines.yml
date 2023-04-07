@@ -14,3 +14,12 @@ trigger:
     cliProjectKey: 'ansible'
     cliProjectName: 'lab-ansible-sonarqube'
     cliSources: '.'
+
+- task: SonarQubePrepare@5
+  inputs:
+    SonarQube: 'Ansible-Sonarqube'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: 'ansible'
+    cliProjectName: 'lab-ansible-sonarqube'
+    cliSources: '.'
