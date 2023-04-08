@@ -22,11 +22,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-#          projectBaseDir: "install-k8s/"
-          args: >
-            "-Dsonar.sources=install-k8s"
- #           "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
       - name: Run Ansible Lint
         run: ansible-lint
       # If you wish to fail your job when the Quality Gate is red, uncomment the
