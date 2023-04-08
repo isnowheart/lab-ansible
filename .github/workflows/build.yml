@@ -17,7 +17,7 @@ jobs:
         run: |
           pip install ansible
           pip install ansible-lint
-          echo "$PWD"
+          echo "to invisivel $PWD"
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -25,7 +25,7 @@ jobs:
         with:
 #          projectBaseDir: "install-k8s/"
           args: >
-            "-Dsonar.exclusions=**/*test*/**, **/*Test*/**"
+            "-Dsonar.exclusions=**/*test*/**,**/*Test*/**"
             "-Dsonar.sources=install-k8s"
  #           "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
       - name: Run Ansible Lint
