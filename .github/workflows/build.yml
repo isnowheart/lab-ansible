@@ -40,7 +40,7 @@ jobs:
         with:
 #          projectBaseDir: "install-k8s/"
           args: >
-            "-Dsonar.sources=k8s-install/"
+            "-Dsonar.sources=install-k8s/"
             "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
             "-Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}"
             "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
