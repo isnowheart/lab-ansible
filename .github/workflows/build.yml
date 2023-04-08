@@ -24,7 +24,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
-          projectBaseDir: '../.'
+          projectBaseDir: .
           args: >
             -Dsonar.sources=.
             -Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf
