@@ -23,6 +23,12 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+#          projectBaseDir: "install-k8s/"
+          args: >
+            "-Dsonar.sources=install-k8s/"
+            "-Dsonar.exclusions=**/*test*/**, **/*Test*/**"
+ #           "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
       # - uses: sonarsource/sonarqube-quality-gate-action@master
@@ -68,6 +74,7 @@ jobs:
 #          args: >
 #            "-Dsonar.sources=install-k8s/"
 #            "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
+#            "-Dsonar.exclusions=**/*test*/**, **/*Test*/**"
 #            "-Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}"
 #            "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
 #            '-Dsonar.projectKey="isnowheart_lab-ansible_AYdemqJJ_aE1HNgLETEK"' 
