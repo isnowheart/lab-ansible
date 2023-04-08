@@ -17,8 +17,6 @@ jobs:
         run: |
           pip install ansible
           pip install ansible-lint
-      - name: Run Ansible Lint
-        run: ansible-lint
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -29,6 +27,8 @@ jobs:
             "-Dsonar.exclusions=**/*test*/**, **/*Test*/**"
  #           "-Dsonar.sources=install-k8s/"
  #           "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
+      - name: Run Ansible Lint
+        run: ansible-lint
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
       # - uses: sonarsource/sonarqube-quality-gate-action@master
