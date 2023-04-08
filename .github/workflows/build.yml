@@ -45,6 +45,5 @@ jobs:
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.projectKey="isnowheart_lab-ansible_AYdemqJJ_aE1HNgLETEK" 
-            -Dsonar.projectName="lab-ansible" 
             -Dsonar.ansible.playbook=main.yml
             -Dsonar.ansible.rolesdir=roles
