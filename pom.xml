@@ -9,19 +9,19 @@
   <artifactId>lab-ansible</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-<!--         
+   
   <properties>
     <sonar.organization>lab-es</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
---> 
 
+<!--
     <properties>
       <sonar.host.url>http://192.168.1.131:9000</sonar.host.url>
       <maven.compiler.source>1.7</maven.compiler.source>
       <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
- 
+ --> 
   <name>lab-ansible</name>
     <!-- FIXME change it to the project's website -->
   <url>https://github.com/isnowheart/lab-ansible</url>
