@@ -5,10 +5,9 @@ on:
     branches:
       - main
 
-
 jobs:
-  sonarqube:
-    name: SonarQube Scan
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,24 +25,51 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
+      # - uses: sonarsource/sonarqube-quality-gate-action@master
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      
+      
+
+#jobs:
+#  sonarqube:
+#    name: SonarQube Scan
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+#      - name: Install dependencies
+#        run: |
+#          pip install ansible
+#          pip install ansible-lint
+#      - name: Run Ansible Lint
+#        run: ansible-lint
+#      - uses: sonarsource/sonarqube-scan-action@master
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
 #       - uses: sonarsource/sonarqube-quality-gate-action@master
  #        timeout-minutes: 5
   #       env:
   #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Run SonarQube scan
-        uses: sonarsource/sonarqube-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
+#      - name: Run SonarQube scan
+#        uses: sonarsource/sonarqube-action@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#        with:
 #          projectBaseDir: "install-k8s/"
-          args: >
-            "-Dsonar.sources=install-k8s/"
-            "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
-            "-Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}"
-            "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
-            '-Dsonar.projectKey="isnowheart_lab-ansible_AYdemqJJ_aE1HNgLETEK"' 
+#          args: >
+#            "-Dsonar.sources=install-k8s/"
+#            "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
+#            "-Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}"
+#            "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
+#            '-Dsonar.projectKey="isnowheart_lab-ansible_AYdemqJJ_aE1HNgLETEK"' 
 #            -Dsonar.ansible.playbook=main.yml
 #            -Dsonar.ansible.rolesdir=roles
