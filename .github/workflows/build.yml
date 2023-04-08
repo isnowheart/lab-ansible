@@ -26,8 +26,8 @@ jobs:
         with:
 #          projectBaseDir: "install-k8s/"
           args: >
-            "-Dsonar.sources=install-k8s/"
             "-Dsonar.exclusions=**/*test*/**, **/*Test*/**"
+ #           "-Dsonar.sources=install-k8s/"
  #           "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
