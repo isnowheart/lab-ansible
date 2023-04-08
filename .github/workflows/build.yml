@@ -40,10 +40,10 @@ jobs:
         with:
 #          projectBaseDir: "install-k8s/"
           args: >
-            -Dsonar.sources=.
-            -Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.projectKey="isnowheart_lab-ansible_AYdemqJJ_aE1HNgLETEK" 
-            -Dsonar.ansible.playbook=main.yml
-            -Dsonar.ansible.rolesdir=roles
+            "-Dsonar.sources=k8s-install/"
+            "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
+            "-Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}"
+            "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
+            '-Dsonar.projectKey="isnowheart_lab-ansible_AYdemqJJ_aE1HNgLETEK"' 
+#            -Dsonar.ansible.playbook=main.yml
+#            -Dsonar.ansible.rolesdir=roles
