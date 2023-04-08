@@ -25,7 +25,6 @@ jobs:
         with:
 #          projectBaseDir: "install-k8s/"
           args: >
-            "-Dsonar.exclusions=**/*test*/**,**/*Test*/**"
             "-Dsonar.sources=install-k8s"
  #           "-Dsonar.exclusions=**/*.md, **/*.txt, **/*.ini, **/*.conf"
       - name: Run Ansible Lint
