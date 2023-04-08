@@ -19,7 +19,7 @@ steps:
   displayName: 'Run a multi-line script'
 - task: SonarQubePrepare@5
   inputs:
-    SonarQube: 'Ansible-Sonarqube'
+    SonarQube: 'Sonarqube'
     scannerMode: 'CLI'
     configMode: 'manual'
     cliProjectKey: 'ansible'
