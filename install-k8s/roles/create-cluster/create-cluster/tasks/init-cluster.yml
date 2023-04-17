@@ -34,11 +34,7 @@
   get_url:
     url: "{{ default_url_weavenet }}"
     dest: /tmp/weavenet.yaml
-<<<<<<< HEAD
-    mode: '0644'
-=======
     mode: '0755'
->>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5
 
 - name: Setting pod network Weavenet
   shell: kubectl apply -f /tmp/weavenet.yaml

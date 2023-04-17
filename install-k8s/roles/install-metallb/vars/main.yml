@@ -1,0 +1,6 @@
+---
+# vars file for roles/install-metallb
+repo_name: metallb
+url_repo: https://metallb.github.io/metallb
+deploy_namespace: metallb-system
+release_name: metallb

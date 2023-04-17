@@ -1,0 +1,150 @@
+---
+- name: Add stable chart REPO for ArgoCD 
+  kubernetes.core.helm_repository:
+    name: "{{ repo_name }}"
+    repo_url: "{{ url_repo_helm }}"
+  register: repo_argocd
+
+- name: Deploy latest version of ArgoCD chart inside monitoring namespace (and create it)
+#  shell: "kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+  kubernetes.core.helm:
+    chart_ref: argo/argo-cd
+    release_name: "{{ release_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+    release_values: 
+      server:
+        service:
+          type: LoadBalancer
+
+	## Argo CD configuration
+	## Argo Configs
+
+
+	## Application controller
+	controller:
+	  ## Application controller metrics configuration
+	  metrics:
+		# -- Deploy metrics service
+		enabled: true
+		serviceMonitor:
+		  # -- Enable a prometheus ServiceMonitor
+		  enabled: true
+		rules:
+		  # -- Deploy a PrometheusRule for the application controller
+		  enabled: true
+	## Dex
+	dex:
+	  metrics:
+		# -- Deploy metrics service
+		enabled: true
+		serviceMonitor:
+		  # -- Enable a prometheus ServiceMonitor
+		  enabled: true
+	## Redis
+	redis:
+	  ## Prometheus redis-exporter sidecar
+	  exporter:
+		# -- Enable Prometheus redis-exporter sidecar
+		enabled: true
+	  metrics:
+		# -- Deploy metrics service
+		enabled: true
+		# Redis metrics service configuration
+		serviceMonitor:
+		  # -- Enable a prometheus ServiceMonitor
+		  enabled: true
+	#redis-ha:
+	#  # -- Enables the Redis HA subchart and disables the custom Redis single node deployment
+	#  enabled: false
+	#  ## Prometheus redis-exporter sidecar
+	#  exporter:
+	#    # -- Enable Prometheus redis-exporter sidecar
+	#    enabled: false
+
+	## Server
+	server:
+	  ## Server service configuration
+	  service:
+		type: LoadBalancer
+	  ## Server metrics service configuration
+	  metrics:
+		# -- Deploy metrics service
+		enabled: true
+		serviceMonitor:
+		  # -- Enable a prometheus ServiceMonitor
+		  enabled: true
+
+	## Repo Server
+	repoServer:
+	  ## Repo server metrics service configuration
+	  metrics:
+		# -- Deploy metrics service
+		enabled: true
+		serviceMonitor:
+		  # -- Enable a prometheus ServiceMonitor
+		  enabled: true
+
+
+	## ApplicationSet controller
+	applicationSet:
+	  ## Metrics service configuration
+	  metrics:
+		# -- Deploy metrics service
+		enabled: true
+		serviceMonitor:
+		  # -- Enable a prometheus ServiceMonitor
+		  enabled: true
+
+	## Notifications controller
+	notifications:
+	  metrics:
+		# -- Enables prometheus metrics server
+		enabled: true
+		serviceMonitor:
+		  # -- Enable a prometheus ServiceMonitor
+		  enabled: true
+
+
+
+
+    create_namespace: true
+    update_repo_cache: true
+  register: install_argocd
+
+  #- name: Expose ArgoCD Server host port and print IP and port to access ArgoCD UI
+  #  k8s_service:
+  #    namespace: "{{ deploy_namespace }}"
+  #    name: "{{ release_name }}-server"
+  #    ports:
+  #    - name: https
+  #      nodePort: "{{ https_argo_node_port }}"
+  #      port: 8080
+  #      protocol: TCP
+  #      targetPort: 8080
+  #    definition:
+  #      metadata:
+  #        name: "{{ release_name }}-server"
+  #        namespace: "{{ deploy_namespace }}"
+  #        labels:
+  #          app.kubernetes.io/component: server
+  #          app.kubernetes.io/instance: "{{ release_name }}"
+  #          app.kubernetes.io/managed-by: Helm
+  #          app.kubernetes.io/name: "{{ deploy_namespace }}-server"
+  #          app.kubernetes.io/part-of: "{{ deploy_namespace }}"
+  #    selector:
+  #      app.kubernetes.io/instance: "{{ release_name }}"
+  #      app.kubernetes.io/name: "{{ deploy_namespace }}-server"
+  #    type: NodePort
+  #    state: present
+  #  register: argocd_service
+
+  #- name: Print IP and port to access ArgoCD
+  #  debug:
+  #    msg: 
+  #      - "Access ArgoCD at:"
+  #      - "http://{{ ansible_host }}:{{ https_argo_node_port }}"
+
+#- name: Getting first temp password
+#  shell: "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 > /tmp/argopass -d && cat /tmp/argopass && rm /tmp/argopass"
+#  register: argocd_pass
+

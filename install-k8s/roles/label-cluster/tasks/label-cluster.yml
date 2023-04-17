@@ -11,5 +11,33 @@
       metadata:
         labels:
           node-role.kubernetes.io/worker: ""
+<<<<<<< HEAD
+#          lab-es.project/role: "{{ group_name }}"
+    state: present
+#  when: "{{ item}}  in groups[item]"
+#  loop: "{{ groups.keys() | list }}"
+  loop: "{{ worker_nodes.stdout_lines }}"
+  register: label_nodes
+
+#- name: output label sei la
+#  debug:
+#    var: label_nodes
+
+- name: Add label to matching nodes
+  k8s:
+    kind: Node
+    name: node4
+    definition:
+      metadata:
+        labels:
+#          node-role.kubernetes.io/worker: ""
+          lab-es.project/role: "database"
+    state: present
+#  when: "{{ item}}  in groups[item]"
+#  loop: "{{ groups.keys() | list }}"
+#  loop: "{{ worker_nodes.stdout_lines }}"
+  register: label_nodes
+=======
     state: present
   loop: "{{ worker_nodes.stdout_lines }}"
+>>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5

@@ -1,0 +1,24 @@
+---
+- name: Add stable chart REPO for NFS-Provisioner 
+  kubernetes.core.helm_repository:
+    name: "{{ repo_name }}"
+    repo_url: "{{ url_repo }}"
+  register: repo_nfs_provisioner
+
+- name: Deploy latest version of NFS-Provisioner chart inside nfs-provisioner namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner
+    release_name: "{{ release_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+    release_values: 
+      nodeSelector:
+        lab-es.project/role: database
+      storageClass:
+        defaultClass: true
+      nfs:
+        server: node4
+        path: "/data"
+    create_namespace: true
+    update_repo_cache: true
+  register: install_nfs_provisioner
+

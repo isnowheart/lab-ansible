@@ -1,0 +1,66 @@
+---
+- name: nfs-utils and nfs-common installation packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - nfs-kernel-server
+    - nfs-common
+  register: pre_task_nfs
+
+- name: Add stable chart REPO for MetalLB 
+  kubernetes.core.helm_repository:
+    name: "{{ repo_name }}"
+    repo_url: "{{ url_repo }}"
+  register: repo_metallb
+
+- name: Deploy latest version of Metallb chart inside metallb-system namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: metallb/metallb
+    release_name: "{{ release_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+#    release_values: 
+    create_namespace: true
+    update_repo_cache: true
+    wait: true
+  register: install_metallb
+  retries: 5
+
+# Scale Metallb controller to 2 replicas
+- name: Scale Metallb controller to 2 replicas
+  shell: "kubectl scale -n {{ deploy_namespace }} deployment metallb-controller --replicas=2"
+
+# Adding IPAddressPool
+- name: Apply IPAddressPool configuration
+  k8s:
+    state: present
+    namespace: "{{ deploy_namespace }}"
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: sandbox
+        namespace: metallb-system
+      spec:
+        addresses:
+          - 192.168.1.131-192.168.1.250
+        autoAssign: true
+        avoidBuggyIPs: true
+  register: ipaddresspool_config
+
+- name: Apply L2Advertisement configuration
+  k8s:
+    state: present
+    namespace: "{{ deploy_namespace }}"
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: L2Advertisement
+      metadata:
+        name: metallb-l2advertisement
+        namespace: metallb-system
+      spec:
+        ipAddressPools:
+          - sandbox
+  register: l2advertisement_config
+
+

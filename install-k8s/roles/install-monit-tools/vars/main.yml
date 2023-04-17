@@ -1,6 +1,7 @@
 ---
 # vars file for roles/install-monit-tools
 repo_name: prometheus-community
+charf_ref: prometheus-community/kube-prometheus-stack
 url_repo_helm: https://prometheus-community.github.io/helm-charts
 deploy_prometheus: "--set prometheusOperator.createCustomResource=false {{ release_name }} prometheus-community/kube-prometheus-stack"
 deploy_namespace: monitoring

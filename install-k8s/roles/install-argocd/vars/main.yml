@@ -3,5 +3,8 @@
 repo_name: argo
 url_repo_helm: https://argoproj.github.io/argo-helm
 deploy_namespace: argocd
+<<<<<<< HEAD
+=======
 https_argo_node_port: 31000
+>>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5
 release_name: lab-argocd

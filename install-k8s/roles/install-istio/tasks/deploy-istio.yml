@@ -1,0 +1,67 @@
+---
+- name: Add stable chart REPO for Istio
+  kubernetes.core.helm_repository:
+    name: "{{ repo_name }}"
+    repo_url: "{{ url_repo }}"
+  register: repo_istio
+
+- name: Deploy latest version of Istio Base chart inside istio-system namespace (and create i>
+  kubernetes.core.helm:
+    chart_ref: istio/base
+    release_name: "{{ release_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+    release_values:
+      global:
+        enableMeshWideTelemetry: true
+        meshExpansion:
+          enabled:true
+    create_namespace: true
+    update_repo_cache: true
+    wait: true
+  register: install_istio
+
+- name: Deploy latest version of Istio Discovery chart inside istio-system namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: istio/istiod
+    release_name: "{{ release_discovery_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+    release_values:
+      global:
+        enableMeshWideTelemetry: true
+        meshExpansion:
+          enabled:true
+    update_repo_cache: true
+    wait: true
+  register: install_istiod
+
+- name: Deploy latest version of Istio Discovery chart inside istio-system namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: istio/cni
+    release_name: istio-cni
+    release_namespace: kube-system
+    release_values:
+      prometheus:
+        enabled: true
+      nodeagent:
+        enabled: true
+      cniBinDir: "/opt/cni/bin"
+      cniConfDir: "/etc/cni/net.d"
+      prometheusScrape: true
+    update_repo_cache: true
+    wait: true
+  register: install_istiod
+
+- name: Deploy latest version of Istio Ingress chart inside istio-ingress namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: istio/gateway
+    release_name: "{{ release_ingress_name }}"
+    release_namespace: "{{ deploy_ingress_namespace }}"
+    release_values:
+      global:
+        enableMeshWideTelemetry: true
+        meshExpansion:
+          enabled:true
+    create_namespace: true
+    update_repo_cache: true
+    wait: true
+  register: install_istio_ingress

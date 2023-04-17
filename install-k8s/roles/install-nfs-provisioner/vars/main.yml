@@ -1,0 +1,7 @@
+---
+# vars file for roles/install-nfs-provisioner
+repo_name: nfs-ganesha-server-and-external-provisioner
+url_repo: https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+deploy_namespace: nfs-provisioner
+release_name: nfs-provisioner
+

@@ -1,0 +1,9 @@
+---
+# vars file for roles/install-istio
+repo_name: istio
+url_repo: https://istio-release.storage.googleapis.com/charts
+deploy_namespace: istio-system
+deploy_ingress_namespace: istio-ingress
+release_name: istio-base
+release_discovery_name: istiod
+release_ingress_name: istio-ingress

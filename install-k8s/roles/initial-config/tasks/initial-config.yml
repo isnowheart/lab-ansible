@@ -1,0 +1,71 @@
+- name: Turn off SWAP
+  shell: swapoff -a && sed -i '/swap/s/^/#/' /etc/fstab
+
+- name: Docker installation
+  shell: curl -fsSL https://get.docker.com | bash
+  notify: Restart Docker
+
+- name: Adding k8s REPO APT keys
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Adding k8s REPO
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+
+<<<<<<< HEAD:install-k8s/roles/initial-config/tasks/initial-config.yml
+- name: kubelet, kubeadm and kubectl installation packages version {{ version_k8s }}
+=======
+- name: Turn off SWAP
+  shell: swapoff -a
+
+- name: kubelet, kubeadm and kubectl installation packages
+>>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5:install-k8s/roles/install-k8s/tasks/install.yml
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+<<<<<<< HEAD:install-k8s/roles/initial-config/tasks/initial-config.yml
+    - kubelet={{ version_k8s }}
+    - kubeadm={{ version_k8s }}
+    - kubectl={{ version_k8s }}
+=======
+    - kubelet=1.24.12-00
+    - kubeadm=1.24.12-00
+    - kubectl=1.24.12-00
+>>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5:install-k8s/roles/install-k8s/tasks/install.yml
+  notify: Restart Kubelet
+
+- name: Remove containerd config file
+  file:
+    path: /etc/containerd/config.toml
+    state: absent
+  changed_when: True
+
+- name: Stopping Containerd
+  service:
+    name: containerd
+    state: stopped
+
+- name: Stopping Kubelet
+  service:
+    name: kubelet
+    state: stopped
+
+- name: Starting Containerd
+  service:
+    name: containerd
+    state: started
+
+- name: Starting Kubelet
+  service:
+    name: kubelet
+    state: started
+
+- name: Removing old cluster config
+  file:
+    path: ~/.kube/config
+    state: absent
+  changed_when: True

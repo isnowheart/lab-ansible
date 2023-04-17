@@ -1,0 +1,3 @@
+---
+# tasks file for initial-config
+- include_tasks: initial-config.yml

@@ -1,16 +1,80 @@
 ---
 - name: Add stable chart REPO for Prometheus-Operator 
   kubernetes.core.helm_repository:
+<<<<<<< HEAD
+    name: "{{ repo_name }}"
+    repo_url: "{{ url_repo_helm }}"
+
+- name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: "{{ charf_ref }}"
+=======
     name: prometheus-community
     repo_url: "https://prometheus-community.github.io/helm-charts"
 
 - name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
   kubernetes.core.helm:
     chart_ref: prometheus-community/kube-prometheus-stack
+>>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5
     release_name: "{{ release_name }}"
     release_namespace: "{{ deploy_namespace }}"
     create_namespace: true
     update_repo_cache: true
+<<<<<<< HEAD
+    release_values:
+      grafana:
+        service:
+          type: LoadBalancer
+          name: https-grafana-web
+          port: 443
+          protocol: TCP
+          targetPort: 3000
+      prometheus:
+        service:
+          type: LoadBalancer
+        # scrape annotations specifies whether to add Prometheus metric auto-collection annotations to pods.
+        scrapeAnnotations: true
+        # Prometheus Operator PodMonitors
+        podMonitor:
+          enabled: true
+        # Prometheus Operator ServiceMonitors. To be used as an alternative to podMonitor, supports secure metrics.
+        serviceMonitor:
+          enabled: true
+        # Prometheus Operator alertmanager alerts
+        prometheusRule:
+          enabled: true
+  register: install_kube_prometheus_stack
+
+    #- name: Expose Grafana host port and print IP and port to access Grafana
+    #  k8s_service:
+    #    namespace: "{{ deploy_namespace }}"
+    #    name: "{{ release_name }}-grafana"
+    #    ports:
+    #    - name: http-web
+    #      nodePort: "{{ grafana_node_port }}"
+    #      port: 80
+    #      protocol: TCP
+    #      targetPort: 3000
+    #    definition:
+    #      metadata:
+    #        name: "{{ release_name }}-grafana"
+    #        namespace: "{{ deploy_namespace }}"
+    #        labels:
+    #          app.kubernetes.io/instance: "{{ release_name }}"
+    #          app.kubernetes.io/name: grafana
+    #    selector:
+    #      app.kubernetes.io/instance: "{{ release_name }}"
+    #      app.kubernetes.io/name: grafana
+    #    type: NodePort
+    #    state: present
+    #  register: grafana_service
+
+    #- name: Print IP and port to access Grafana
+    #  debug:
+    #    msg: 
+    #      - "Access Grafana at:"
+    #      - "http://{{ ansible_host }}:{{ grafana_node_port }}"
+=======
 
 - name: Expose Grafana host port and print IP and port to access Grafana
   k8s_service:
@@ -44,3 +108,4 @@
     msg: 
       - "Access Grafana at:"
       - "http://{{ ansible_host }}:{{ grafana_node_port }}"
+>>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5

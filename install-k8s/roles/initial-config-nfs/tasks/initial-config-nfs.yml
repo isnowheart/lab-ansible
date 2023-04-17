@@ -1,0 +1,15 @@
+---
+- name: nfs-utils and nfs-common installation packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - nfs-kernel-server
+    - nfs-common
+  register: pre_task_nfs
+
+- name: Create /data folder with owner nobody
+  file:
+    path: "/data"
+    state: directory
+    owner: nobody

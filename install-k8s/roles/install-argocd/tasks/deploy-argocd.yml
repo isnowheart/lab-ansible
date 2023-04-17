@@ -11,10 +11,97 @@
     chart_ref: argo/argo-cd
     release_name: "{{ release_name }}"
     release_namespace: "{{ deploy_namespace }}"
+<<<<<<< HEAD
+    release_values: 
+      server:
+        ## Server service configuration
+        service:
+          type: LoadBalancer
+        ## Server metrics service configuration
+        metrics:
+          # -- Deploy metrics service
+          enabled: true
+          serviceMonitor:
+            # -- Enable a prometheus ServiceMonitor
+            enabled: true
+      ## Application controller
+      controller:
+        ## Application controller metrics configuration
+        metrics:
+          # -- Deploy metrics service
+          enabled: true
+          serviceMonitor:
+          # -- Enable a prometheus ServiceMonitor
+            enabled: true
+      ## Dex
+      dex:
+        metrics:
+          # -- Deploy metrics service
+         enabled: true
+         serviceMonitor:
+           # -- Enable a prometheus ServiceMonitor
+           enabled: true
+      ## Redis
+      #      redis:
+      #        ## Prometheus redis-exporter sidecar
+      #        exporter:
+      #          # -- Enable Prometheus redis-exporter sidecar
+      #          enabled: true
+      #        metrics:
+      #          # -- Deploy metrics service
+      #          enabled: true
+      #          # Redis metrics service configuration
+      #          serviceMonitor:
+      #            # -- Enable a prometheus ServiceMonitor
+      #            enabled: true
+      redis-ha:
+        # -- Enables the Redis HA subchart and disables the custom Redis single node deployment
+        enabled: true
+        ## Prometheus redis-exporter sidecar
+        exporter:
+          # -- Enable Prometheus redis-exporter sidecar
+          enabled: true
+        metrics:
+          # -- Deploy metrics service
+          enabled: true
+          # Redis metrics service configuration
+          serviceMonitor:
+            # -- Enable a prometheus ServiceMonitor
+            enabled: true
+      ## Repo Server
+      repoServer:
+        ## Repo server metrics service configuration
+        metrics:
+          # -- Deploy metrics service
+          enabled: true
+          serviceMonitor:
+            # -- Enable a prometheus ServiceMonitor
+            enabled: true
+      ## ApplicationSet controller
+      applicationSet:
+        ## Metrics service configuration
+        metrics:
+          # -- Deploy metrics service
+          enabled: true
+          serviceMonitor:
+            # -- Enable a prometheus ServiceMonitor
+            enabled: true
+      ## Notifications controller
+      notifications:
+        metrics:
+          # -- Enables prometheus metrics server
+          enabled: true
+          serviceMonitor:
+            # -- Enable a prometheus ServiceMonitor
+            enabled: true
+=======
+>>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5
     create_namespace: true
     update_repo_cache: true
   register: install_argocd
 
+<<<<<<< HEAD
+=======
 - name: Expose ArgoCD Server host port and print IP and port to access ArgoCD UI
   k8s_service:
     namespace: "{{ deploy_namespace }}"
@@ -52,3 +139,4 @@
 #  shell: "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 > /tmp/argopass -d && cat /tmp/argopass && rm /tmp/argopass"
 #  register: argocd_pass
 
+>>>>>>> d74c4085452fc514699114e69e00f82ec34b86d5

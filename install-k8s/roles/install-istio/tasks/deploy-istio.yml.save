@@ -1,0 +1,92 @@
+---
+- name: Add stable chart REPO for Istio
+  kubernetes.core.helm_repository:
+    name: "{{ repo_name }}"
+    repo_url: "{{ url_repo }}"
+  register: repo_istio
+
+- name: Deploy latest version of Istio Discovery chart inside istio-system namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: istio/istiod
+    release_name: "{{ release_discovery_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+    release_values:
+    update_repo_cache: true
+    wait: true
+  register: install_istiod
+
+- name: Deploy latest version of Istio Base chart inside istio-system namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: istio/base
+    release_name: "{{ release_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+    release_values:
+      global:
+        enableMeshWideTelemetry: true
+        meshExpansion: true
+    create_namespace: true
+    update_repo_cache: true
+    wait: true
+  register: install_istio
+
+#helm upgrade --install -n istio-system istiod istio/istiod --set global.enableMeshWideTelemetry=true,global.meshExpansion.enabled=true
+#helm upgrade --install -n istio-system istio-base istio/base --set global.enableMeshWideTelemetry=true,global.meshExpansion.enabled=true
+#helm upgrade --install istio-cni istio/cni --set global.enableMeshWideTelemetry=true,global.meshExpansion.enabled=true
+#helm upgrade --install istio-cni istio/istio-cni --namespace kube-system  --set prometheus.enabled=true,nodeagent.enabled=true,cniBinDir=/opt/cni/bin,cniConfDir=/etc/cni/net.d,prometheusScrape=true
+#helm upgrade --install -n istio-ingress istio-gateway istio/gateway --set global.enableMeshWideTelemetry=true,global.meshExpansion.enabled=true
+
+- name: Deploy latest version of Istio Discovery chart inside istio-system namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: istio/cni
+    release_name: istio-cni
+    release_namespace: kube-system
+    release_values:
+      prometheus
+        enabled=true
+      nodeagent
+        enabled=true
+      cniBinDir: "/opt/cni/bin,cniConfDir=/etc/cni/net.d,prometheusScrape=true
+
+    update_repo_cache: true
+    wait: true
+  register: install_istiod
+
+
+
+- name: Output Istio Base
+  debug:
+    var: install_istio.stdout_lines.status
+
+- name: Deploy latest version of Istio Discovery chart inside istio-system namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: istio/istiod
+    release_name: "{{ release_discovery_name }}"
+    release_namespace: "{{ deploy_namespace }}"
+    release_values:
+    update_repo_cache: true
+    wait: true
+  register: install_istiod
+
+- name: Output Istio Discovery
+  debug:
+    var: install_istiod.stdout_lines.status
+
+- name: Deploy latest version of Istio Ingress chart inside istio-ingress namespace (and create it)
+  kubernetes.core.helm:
+    chart_ref: istio/gateway
+    release_name: "{{ release_ingress_name }}"
+    release_namespace: "{{ deploy_ingress_namespace }}"
+    release_values:
+    create_namespace: true
+    update_repo_cache: true
+    wait: true
+  register: install_istio_ingress
+
+- name: Output Istio Ingress
+  debug:
+    var: install_istio_ingress.stdout_lines.status
+
+
+helm install istio-ingressgateway istio/gateway -n istio-ingress
+
+
